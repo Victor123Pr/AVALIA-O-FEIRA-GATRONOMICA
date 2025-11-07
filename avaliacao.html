@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avaliação - Bobó de Frango</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Formulário de Avaliação -->
+  <div class="container">
+    <h2>Nossa comida Bobó de Frango!</h2>
+
+    <div class="categoria">
+      <label>1. Comida</label>
+      <div class="estrelas" data-categoria="comida">☆☆☆☆☆</div>
+    </div>
+
+    <div class="categoria">
+      <label>2. Decoração</label>
+      <div class="estrelas" data-categoria="decoracao">☆☆☆☆☆</div>
+    </div>
+
+    <div class="categoria">
+      <label>3. Atendimento</label>
+      <div class="estrelas" data-categoria="atendimento">☆☆☆☆☆</div>
+    </div>
+
+    <div class="comentario">
+      <label for="msg">Sugestões e Elogios (Opcional)</label>
+      <textarea id="msg" placeholder="Algum toque especial para o próximo bobó?"></textarea>
+    </div>
+
+    <div class="botoes">
+      <button onclick="enviarAvaliacao()">Enviar Avaliação</button>
+      <a href="index.html" class="btn-voltar">Voltar à Página Inicial</a>
+    </div>
+  </div>
+
+  <!-- Histórico de Avaliações -->
+  <div class="historico">
+    <h3>Avaliações dos Clientes</h3>
+    <div id="lista-avaliacoes">
+      <!-- Exemplo inicial -->
+      <div class="avaliacao-item">
+        <p><strong>Estrelas:</strong> ★★★★☆</p>
+        <p><strong>Comentário:</strong> "Legal muito legal"</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Preencher estrelas ao clicar
+    document.querySelectorAll('.estrelas').forEach(estrelas => {
+      const itens = estrelas.innerHTML.split('');
+      estrelas.innerHTML = '';
+      itens.forEach((_, i) => {
+        const span = document.createElement('span');
+        span.textContent = '☆';
+        span.onclick = () => selecionarEstrelas(estrelas, i + 1);
+        estrelas.appendChild(span);
+      });
+    });
+
+    function selecionarEstrelas(container, qtd) {
+      const spans = container.querySelectorAll('span');
+      spans.forEach((s, i) => {
+        s.textContent = i < qtd ? '★' : '☆';
+        s.style.color = i < qtd ? '#ffcc00' : '#666';
+      });
+    }
+
+    function enviarAvaliacao() {
+      const comida = contarEstrelas('comida');
+      const decoracao = contarEstrelas('decoracao');
+      const atendimento = contarEstrelas('atendimento');
+      const comentario = document.getElementById('msg').value.trim();
+
+      if (comida === 0 || decoracao === 0 || atendimento === 0) {
+        alert("Por favor, avalie todas as categorias com estrelas.");
+        return;
+      }
+
+      const media = Math.round((comida + decoracao + atendimento) / 3);
+      const estrelasMedia = '★'.repeat(media) + '☆'.repeat(5 - media);
+
+      const nova = document.createElement('div');
+      nova.className = 'avaliacao-item';
+      nova.innerHTML = `
+        <p><strong>Estrelas:</strong> ${estrelasMedia}</p>
+        <p><strong>Comentário:</strong> "${comentario || 'Sem comentário'}"</p>
+      `;
+
+      document.getElementById('lista-avaliacoes').prepend(nova);
+      document.getElementById('msg').value = '';
+      alert("Avaliação enviada com sucesso!");
+
+      // Resetar estrelas
+      document.querySelectorAll('.estrelas').forEach(e => {
+        e.querySelectorAll('span').forEach(s => {
+          s.textContent = '☆';
+          s.style.color = '#666';
+        });
+      });
+    }
+
+    function contarEstrelas(categoria) {
+      const container = document.querySelector(`.estrelas[data-categoria="${categoria}"]`);
+      return Array.from(container.querySelectorAll('span')).filter(s => s.textContent === '★').length;
+    }
+  </script>
+
+</body>
+</html>
